@@ -113,11 +113,11 @@ body {
     }
 
     #headerlogo .logo:hover strong {
-      background-color: #9bf1ff;
+      background-color: #56608f;
     }
 
     #headerlogo .logo:active strong {
-      background-color: #53e3fb;
+      background-color: #6272b8;
     }
 
 /* Type */
