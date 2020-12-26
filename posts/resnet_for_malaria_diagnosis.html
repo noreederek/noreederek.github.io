@@ -1,0 +1,201 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Post Title</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../assets/css/blog.css" />
+		<link href="../assets/css/prism.css" rel="stylesheet" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<p id="headerlogo"><a href="#" class="logo"><strong>Mayorov</strong>Blog</a></p>
+								<ul class="icons">
+									<li><a title="About Me" href="https://noreederek.github.io" class="icon fa-address-card"><span class="label">About Me</span></a></li>
+									<li><a title="My GitHub" href="https://github.com/noreederek" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+									<li><a title="Telegram" href="tg://resolve?domain=Jim_Root" class="icon brands alt fa-telegram-plane"><span class="label">Telegram</span></a></li>
+								</ul>
+							</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h2>Сверточная нейронная сеть на базе ResNet для автоматической диагностики малярии</h2>
+									</header>
+									<div class="chip">
+										<div class="chip-content">09 Августа 2018</div>
+									</div>
+
+									<p> В данной статье я приведу простой пример того, как можно использовать методики глубокого обучения (а в частности, CNN и библиотеку Keras) для анализа 
+										изображений при автоматическом тестировании на малярию. Статья вдохновлена двумя работами - 
+										<a href="https://ieeexplore.ieee.org/document/7897215" target="_blank">Evaluations of CNNs for Auto-Identiﬁcation of Malaria Infected Bloodcells</a> (Y. Dong и др) 
+										<strong>2017 года</strong> и <a href="https://ieeexplore.ieee.org/document/7822567" target="_blank">CNN-Based 
+											Analysis for Malaria Diagnostic</a> (Z. Liang и др.) от <strong>конца 2016</strong> (читайте через SciHub или посмотрите в приложенные мной PDF 
+											(<a href="https://drive.google.com/drive/folders/1U1OECwsjVKiapN6ZvxQjchXV54cub7xX" target="_blank">Google Drive</a>)). 
+											В работе <strong>2017</strong> года при классификации сравниваются три популярные на тот момент архитектуры нейронных сетей (LeNet, AlexNet and GoogLeNet) на их 
+											собственном закрытом датасете из около <em>3500 изображений эритроцитов</em>. В работе же <strong>2016</strong> используется уже открытый датасет из более 
+											чем <em>27000 изображений</em> и модифицированная архитектура AlexNet.</p>
+									<p>Хотя Y. Dong и удалось достичь точности около 98% на GoogLeNet, их набор данных значительно меньше. Поэтому, чтобы не сравнивать теплое с мягким, при сопоставлении я 
+										буду отталкиваться от работы Z. Liang с их точностью на AlexNet около 97%. Я попробую использовать при обучении более современную архитектуру ResNet, чтобы достичь 
+										более высокой точности модели при классификации клеток (вероятно при использовании какого-либо ансамбля архитектур, можно было бы добиться больших показателей, но это 
+										отрицательно скажется, как на скорости обучения, так и на конечном размере модели). Затем мы упакуем НС в мобильное приложение и протестируем ее производительность 
+										локально на смартфоне без подключения к сети.</p>
+									<hr class="major" />
+									<span class="image fit"><img src="images/malaria_1.jpg" alt="" /></span>
+									<p class="italictext">Показатели точности нейросетей Dong и Liang</p>
+									<p>Дабы не капитанствовать и не лить много воды, описывать этиологию и эпидемиологию малярии я не буду. Лишь скажу, что микроскопия толстого и тонкого мазков крови – самый 
+										распространенный метод ее диагностики, особенно в странах третьего мира (другие методики: определение антител к возбудителю малярии, определение белков возбудителя, 
+										ПЦР, экспресс-тесты и др.)</p>
+									<p>Также стоит отметить, что существуют современные микроскопические комплексы для автоматической диагностики малярии, например, 
+										<a href="https://doc.westmedica.com/47EN/focus_brochures/vision_hema_malaria_rev_7.0_12.2016_focus_brochure_en.pdf">Vision Hema® Malaria</a>, 
+										в которых также используются методы машинного обучения. Но вышеуказанные работы и дальнейший техрепорт показывают, что можно уместить функционал 
+										на 400 строк кода на ладони, а не внедрять его в диагностический комбайн.</p>
+										<span class="image fit"><img src="images/malaria_2.jpg" alt="" /></span>
+									<p>
+										Итак, теперь определимся с целями. Я постараюсь:<br>
+										- Обучить нейросеть c архитектурой ResNet на данных из работы Z. Liang определять пораженные клетки c сопоставимой (а лучше с более высокой) точностью.
+										<br>
+										- Подробно описать структуру проекта и сети.
+										<br>
+										- Упаковать НС в приложение и запустить не в облаке, а локально на устройстве (благо Keras позволяет это легко сделать).
+										<br>
+										- <s>Добавить автоматическое распознавание клеток в поле зрения, осуществлять их подсчет и степень паразитемии</s> (upd: на этом этапе мне стало лень).
+									</p>
+
+									<h2>Датасет</h2>
+									<p>Датасет представлен снимками отдельных эритроцитов с тонких мазков крови в архиве <em>cell_image.zip</em> 
+										(<a href="https://drive.google.com/drive/folders/1U1OECwsjVKiapN6ZvxQjchXV54cub7xX" target="_blank">Google Drive</a>) 
+										от <strong>NIH School of Medicine University of Missouri, Columbia</strong>.</p>
+										<span class="image fit"><img src="images/malaria_3.jpg" alt="" /></span>
+									<p>Набор данных состоит из 27 588 изображений, распределенных специалистом по двум классам: Зараженные (Parasitized) и Незараженные (Uninfected) (по 13 794 файла в каждом).</p>
+
+										<p>В принципе, большинство изображений даже без специализированных знаний можно отнести к верному классу. Хотя, как можно видеть, в данных представлено и множество 
+										неоднозначных на первый взгляд образцов.</p>
+									
+									
+									<h2>Требуемый софт</h2>
+									<p>
+
+· Keras (высокоуровневый фреймворк для машинного обучения) - 1) pip install tensorflow; 2) pip install keras<br><br>
+
+· NumPy (библиотека для работы с многомерными массивами и высокоуровневыми математическими функциями) – pip install numpy<br><br>
+
+· Scikit-learn (библиотека для анализа данных на python) – pip install scikit<br><br>
+
+· Matplotlib (визуализация данных) - pip install matplotlib
+									</p>
+									<h2>Структура проекта</h2>
+									<p>1) Создаем папку project<br><br>
+
+										2) Копируем в нее copy_datasamples.py (скрипт для разметки данных) и training.py (скрипт для обучения классификатора)<br><br>
+										
+										3) Создаем в project папку dataset; распаковываем в нее cell_image.zip</p>
+										<h2>Подготовка данных (copy_datasamples.py)</h2>
+										<p>Открываем copy_datasamples.py</p>
+										<span class="image fit"><img src="images/malaria_4.jpg" alt="" /></span>
+
+										<p>Так как наш датасет еще не размечен, нам придется его разделить на Обучающую (по которой будет произведена настройка (оптимизация параметров) модели зависимости), 
+											Тестовую (по которой будет оценивается качество построенной модели) и Проверочную (по которой осуществляется выбор наилучшей модели из множества моделей, 
+											построенных по обучающей) выборки.</p>
+											<span class="image fit"><img src="images/malaria_5.jpg" alt="" /></span>
+										<p>Разделяем данные: Обучающие - 72%, тестовые – 20%, проверочные – 8% (Можно задать и другие значения, но это один из общепринятых вариантов).</p>
+										<span class="image fit"><img src="images/malaria_6.jpg" alt="" /></span>
+										<p>Перемешиваем пути изображений из общей директории, сохраняя распределение по признакам, используем random.seed, чтобы можно было в последующем воспроизвести результат и менять обучающие наборы 
+											(<em>модуль random – это генератор псевдослучайных чисел, в котором стандартно для имплементации функции используется системное время, но если задать seed мы сможем
+												 потом повторно воспроизвести результаты перемешивания</em>).
+
+											<br><br>Выполняем (жмем Run – Shift + F10) скрипт – и данные разместятся по папкам (Если папок нет, они создадутся).
+											
+											<br><br>Получим такую структуру данных:</p>
+										<span class="image fit"><img src="images/malaria_7.jpg" alt="" /></span>
+										<p>Теперь можно приступать к обучению сети.</p>
+
+										<h2>Описание архитектуры нейросети ResNet (training.py)</h2>
+										<p>
+											Краеугольным камнем ResNet является, предсказывающий отклонения весов от прошлых слоев, остаточный модуль, который был разработан подразделением 
+											Microsoft Research Asia. Он был использован на турнире по анализу изображений ImageNet в ансамбле из 6-ти ResNet сетей глубиной в 152 слоя и достиг 
+											top-5 ошибки всего в 3.57%. Подробнее можно почитать <a href="https://habr.com/ru/company/mailru/blog/311706/">здесь</a> (архитектура описана хоть и поверхностно, но вполне понятно), хотя для 
+											ТруДатаСайнсЭкспириенс лучше полистать оригинальную статью (<a href="https://arxiv.org/pdf/1512.03385.pdf">Deep Residual Learning for Image Recognition - He, Zhang</a> – Microsoft Research Asia).
+										</p>
+										<span class="image fit"><img src="images/malaria_8.jpg" alt="" /></span>
+										<p>Существует несколько вариантов архитектуры модуля, но наиболее эффективной и точной является архитектура с применением одновременно и пре-активации (т.е. RELU и BN помещается до CONV), 
+											и bottleneck. Ее мы и имплементируем.</p>
+											<span class="image fit"><img src="images/malaria_9.jpg" alt="" /></span>
+										<p>Начинаем мы с импорта нашего, в принципе, стандартного набора классов и функций при сборке сверточной нейронной сети. Тем не менее, стоит обратить
+											 внимание на строку 28, где мы импортировали функцию <strong>add</strong>. Внутри остаточного модуля нам нужно будет сложить выходные данные от двух ветвей, тогда 
+											 она нам и понадобится. Также в 29 строке мы импортируем функцию <strong>l2-регуляризации</strong>. L2-регуляризация чрезвычайно важна для коррекции весов в ResNet, 
+											 так как из-за глубины сети она склонна к переобучению.</p>
+											 <span class="image fit"><img src="images/malaria_10.jpg" alt="" /></span>
+											<p>Теперь переходим к нашему остаточному модулю (<strong>residual_module</strong>):</p>
+											<span class="image fit"><img src="images/malaria_11.jpg" alt="" /></span>
+										<p>
+											Конкретно эта ResNet была вдохновлена ее Caffe реализацией от самого Kayming He, а также mxnet реализацией от Вей Ву, поэтому мы будем как можно ближе следовать их выбору параметров. Рассмотрим параметры:<br><br>
+
+— <strong>data</strong> - это просто вход в остаточный модуль.<br><br>
+
+— Значение <strong>K</strong> определяет число фильтров, которые будут использоваться в конечном CONV в bottleneck. Первые два слоя CONV будут использовать K / 4 (согласно Kayming He).<br><br>
+
+— <strong>stride</strong> - шаг свертки.<br><br>
+
+— Затем у нас есть параметр <strong>chanDim</strong>, который определяет ось при выполнении batch нормализации – на это значение мы будем ссылаться позже в build функции в зависимости от того, как расположим цветовые каналы в изображении «с начала» или «с конца».<br><br>
+
+— Следующий параметр будет ответственен за уменьшение размеров нашего пространственного объема – логический параметр <strong>red</strong> (то есть, reduce - уменьшение) будет контролировать, уменьшаем ли мы пространственные измерения (True) или нет (False).<br><br>
+
+— Затем мы подаем силу регуляризации <strong>reg</strong> для всех CONV слоев. Параметр bnEps ответственен за избежание ошибок «деления на ноль» при нормализации входов (input normalization). В Керасе по умолчанию 0.001, однако для нашей конкретной реализации мы ее уменьшим. Как и BnMom, который контролирует импульс перемещения медианных значений - это значение обычно по умолчанию равно 0.99, но He и Вэй Ву рекомендуют уменьшить его значение до 0.9.
+										</p>
+										<p>Теперь, когда параметры residual_module определены, давайте перейдем к телу:</p>
+										<span class="image fit"><img src="images/malaria_12.jpg" alt="" /></span>
+
+
+
+									
+								</section>
+								
+								<ul class="icons">
+									<li><strong>Поделиться: </strong></li>
+									<li><a title="Share with Facebook" href="javascript: void(0)" class="icon brands alt fa-facebook"
+										onClick="window.open('https://www.facebook.com/sharer.php?u=' + window.location.href,'sharer','status=0,toolbar=0,width=650,height=500');">
+									<span class="label">Facebook</span></a></li>
+									<li><a title="Share with VK" href="javascript: void(0)" class="icon brands alt fa-vk"
+										onClick="window.open('https://vkontakte.ru/share.php?url=' + window.location.href,'sharer','status=0,toolbar=0,width=650,height=500');">
+									<span class="label">VK</span></a></li>
+									<li><a title="Telegram" href="javascript: void(0)" class="icon brands alt fa-telegram-plane"
+										onClick="window.open('https://telegram.me/share/url?url=' + window.location.href,'sharer','status=0,toolbar=0,width=650,height=500');">
+									<span class="label">Telegram</span></a></li>
+									<li><a title="Twitter" href="javascript: void(0)" class="icon brands alt fa-twitter"
+										onClick="window.open('https://twitter.com/intent/tweet?text=' + 'Hey, checkout this post! ' + window.location.href,'sharer','status=0,toolbar=0,width=650,height=500');">
+									<span class="label">Twitter</span></a></li>
+								</ul>
+
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+				<div id="sidebar">
+					<div class="inner">
+						<html-include src="../blog_sidepanel.html"></html-include>
+					</div>
+				</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../assets/js/jquery.min.js"></script>
+			<script src="../assets/js/browser.min.js"></script>
+			<script src="../assets/js/breakpoints.min.js"></script>
+			<script src="../assets/js/util.js"></script>
+			<script src="../assets/js/prism.js"></script>
+			<script src="../assets/js/blog.js"></script>
+			<script src="../assets/js/html-include.js"></script>
+
+	</body>
+</html>

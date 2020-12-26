@@ -37,17 +37,47 @@
 
 									<span class="image main"><img src="images/react17.jpg" alt="" /></span>
 
-									<p>Релиз React 17 в своем роде уникален - очень сложно заметить в нем действительно новые фичи.
-										Однако вы можете найти несколько значительных 
-										улучшений в React Core - среди них и изменения в модели JSX</p>
-									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dapibus rutrum facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam tristique libero eu nibh porttitor fermentum. Nullam venenatis erat id vehicula viverra. Nunc ultrices eros ut ultricies condimentum. Mauris risus lacus, blandit sit amet venenatis non, bibendum vitae dolor. Nunc lorem mauris, fringilla in aliquam at, euismod in lectus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In non lorem sit amet elit placerat maximus. Pellentesque aliquam maximus risus, vel sed vehicula.</p>
-									<p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fersapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique lorem ipsum dolor.</p>
-
+									<p> В данной статье я приведу простой пример того, как можно использовать методики глубокого обучения (а в частности, CNN и библиотеку Keras) для анализа 
+										изображений при автоматическом тестировании на малярию. Статья вдохновлена двумя работами - 
+										<a href="https://ieeexplore.ieee.org/document/7897215" target="_blank">Evaluations of CNNs for Auto-Identiﬁcation of Malaria Infected Bloodcells</a> (Y. Dong и др) 
+										<strong>2017 года</strong> и <a href="https://ieeexplore.ieee.org/document/7822567" target="_blank">CNN-Based 
+											Analysis for Malaria Diagnostic</a> (Z. Liang и др.) от <strong>конца 2016</strong> (читайте через SciHub или посмотрите в приложенные мной PDF 
+											(<a href="https://drive.google.com/drive/folders/1U1OECwsjVKiapN6ZvxQjchXV54cub7xX" target="_blank">Google Drive</a>)). 
+											В работе <strong>2017</strong> года при классификации сравниваются три популярные на тот момент архитектуры нейронных сетей (LeNet, AlexNet and GoogLeNet) на их 
+											собственном закрытом датасете из около <em>3500 изображений эритроцитов</em>. В работе же <strong>2016</strong> используется уже открытый датасет из более 
+											чем <em>27000 изображений</em> и модифицированная архитектура AlexNet.</p>
+									<p>Хотя Y. Dong и удалось достичь точности около 98% на GoogLeNet, их набор данных значительно меньше. Поэтому, чтобы не сравнивать теплое с мягким, при сопоставлении я 
+										буду отталкиваться от работы Z. Liang с их точностью на AlexNet около 97%. Я попробую использовать при обучении более современную архитектуру ResNet, чтобы достичь 
+										более высокой точности модели при классификации клеток (вероятно при использовании какого-либо ансамбля архитектур, можно было бы добиться больших показателей, но это 
+										отрицательно скажется, как на скорости обучения, так и на конечном размере модели). Затем мы упакуем НС в мобильное приложение и протестируем ее производительность 
+										локально на смартфоне без подключения к сети.</p>
 									<hr class="major" />
-									<span class="image fit"><img src="images/react17.jpg" alt="" /></span>
-									<p class="italictext">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+									<span class="image fit"><img src="images/malaria_1.jpg" alt="" /></span>
+									<p class="italictext">Показатели точности нейросетей Dong и Liang</p>
+									<p>Дабы не капитанствовать и не лить много воды, описывать этиологию и эпидемиологию малярии я не буду. Лишь скажу, что микроскопия толстого и тонкого мазков крови – самый 
+										распространенный метод ее диагностики, особенно в странах третьего мира (другие методики: определение антител к возбудителю малярии, определение белков возбудителя, 
+										ПЦР, экспресс-тесты и др.)</p>
+									<p>Также стоит отметить, что существуют современные микроскопические комплексы для автоматической диагностики малярии, например, 
+										<a href="https://doc.westmedica.com/47EN/focus_brochures/vision_hema_malaria_rev_7.0_12.2016_focus_brochure_en.pdf">Vision Hema® Malaria</a>, 
+										в которых также используются методы машинного обучения. Но вышеуказанные работы и дальнейший техрепорт показывают, что необязательно запихивать функционал 
+										из 400 строк кода в увесистый диагностический комбайн, когда можно уместить его на ладони.</p>
+										<span class="image fit"><img src="images/malaria_2.jpg" alt="" /></span>
+									<p>
+										Итак, теперь определимся с целями. Я постараюсь:<br>
+										- Обучить нейросеть c архитектурой ResNet на данных из работы Z. Liang определять пораженные клетки c сопоставимой (а лучше с более высокой) точностью.
+										<br>
+										- Подробно описать структуру проекта и сети.
+										<br>
+										- Упаковать НС в приложение и запустить не в облаке, а локально на устройстве (благо Keras позволяет это легко сделать).
+										<br>
+										- <s>Добавить автоматическое распознавание клеток в поле зрения, осуществлять их подсчет и степень паразитемии</s> (upd: на этом этапе мне стало лень).
+									</p>
 
-									<h2>Interdum sed dapibus</h2>
+									<h2>Датасет</h2>
+									<p>Датасет представлен снимками отдельных эритроцитов с тонких мазков крови в архиве <em>cell_image.zip</em> 
+										(<a href="https://drive.google.com/drive/folders/1U1OECwsjVKiapN6ZvxQjchXV54cub7xX" target="_blank">Google Drive</a>) 
+										от <strong>NIH School of Medicine University of Missouri, Columbia</strong>.</p>
+										<span class="image fit"><img src="images/malaria_3.jpg" alt="" /></span>
 									<pre><code class="language-css">p { color: red }</code></pre>
 									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fergiat. Pellentesque in mi eu massa lacinia malesuada et a elit. Donec urna ex, lacinia in purus ac, pretium pulvinar mauris. Curabitur sapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit.</p>
 									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dapibus rutrum facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam tristique libero eu nibh porttitor fermentum. Nullam venenatis erat id vehicula viverra. Nunc ultrices eros ut ultricies condimentum. Mauris risus lacus, blandit sit amet venenatis non, bibendum vitae dolor. Nunc lorem mauris, fringilla in aliquam at, euismod in lectus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In non lorem sit amet elit placerat maximus. Pellentesque aliquam maximus risus, vel sed vehicula. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fersapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique lorem ipsum dolor.</p>
