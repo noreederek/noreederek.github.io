@@ -154,11 +154,96 @@
 										</p>
 										<p>Теперь, когда параметры residual_module определены, давайте перейдем к телу:</p>
 										<span class="image fit"><img src="images/malaria_12.jpg" alt="" /></span>
+										<p>В строке 39 мы инициализируем<span>&nbsp;</span><strong>shortcut</strong><span>&nbsp;</span>&ndash; он является просто ссылкой на входные данные. Позже мы добавим<span>&nbsp;</span><strong>shortcut</strong><span>&nbsp;</span>к выводу нашей ветви &laquo;<em>bottleneck + пре-активация</em>&raquo;.</p>
+<p>Первая ветка &laquo;<em>пре-активация+bottleneck</em>&raquo; показана в строках 42-46. Здесь мы применяем<span>&nbsp;</span><strong>batch normalization</strong><span>&nbsp;</span>за которой идет активация ReLU, а затем CONV 1*1, с использованием четверти К-фильтров. Также можно заметить, что мы исключаем смещения из наших CONV через<span>&nbsp;</span><strong>use_bias</strong><span>&nbsp;</span>=<span>&nbsp;</span><em>False</em>. Зачем нам намеренно его отключать? По мнению Kayming He, смещения уже находятся в слоях BN, которые непосредственно следуют за свертками, поэтому нет необходимости вводить второе смещение.</p>
+<p>Далее у нас идет второй слой CONV в<span>&nbsp;</span><em>bottleneck</em><span>&nbsp;</span>(3*3):</p>
+<span class="image fit"><img src="images/malaria_13.jpg" alt="" /></span>
+<p>Последний блок (1*1) использует целое К:</p>
+<span class="image fit"><img src="images/malaria_14.jpg" alt="" /></span>
+<p>Следующий шаг - посмотреть, нужно ли нам уменьшать пространственные размеры. Если придется, мы сделаем это с помощью сверточного слоя со<span>&nbsp;</span><strong>stride</strong><span>&nbsp;</span>&gt; 1 и<span>&nbsp;</span><strong>K</strong>=1.</p>
+<p>Вывод окончательного conv3 в<span>&nbsp;</span><em>bottleneck</em><span>&nbsp;</span>складывается вместе с<span>&nbsp;</span><strong>shortcut</strong><span>&nbsp;</span>через add. Он и будет возвращен из<span>&nbsp;</span><strong>residual_module</strong>:</p>
+<span class="image fit"><img src="images/malaria_15.jpg" alt="" /></span>
+<p><span>Наконец,</span><strong><span>&nbsp;</span>residual_module</strong><span>&nbsp;описан &ndash; он будет служить нашим строительным блоком при создании глубокой сети внутри метода сборки (</span><strong>build</strong><span>):</span></p>
+<span class="image fit"><img src="images/malaria_16.jpg" alt="" /></span>
+<p>Так же, как и<strong><span>&nbsp;</span>residual_module</strong><span>&nbsp;</span>наша функция сборки требует довольно много параметров для настройки. Но их я опишу на конкретных цифрах, когда мы будем билдить нашу сеть.</p>
+<p>Далее, меняем наши<span>&nbsp;</span><strong>inputShape</strong><span>&nbsp;</span>и<span>&nbsp;</span><strong>chanDim</strong><span>&nbsp;</span>(чтобы избежать ошибок из-за форматирования изображений (размеров, порядка значений в цветовых каналах)) в зависимости от того, используем мы &laquo;<em>channels last</em>&raquo; или &laquo;<em>channels first</em>&raquo;:</p>
+<span class="image fit"><img src="images/malaria_17.jpg" alt="" /></span>
+<p>Теперь мы можем определить вход в нашу ResNet:</p>
+<span class="image fit"><img src="images/malaria_18.jpg" alt="" /></span>
+<p><span>В отличие от других архитектур нейронных сетей, где первый уровень обычно это CONV, мы видим, что&nbsp;</span><em>ResNet</em><span>&nbsp;использует&nbsp;</span><strong>BN</strong><span>&nbsp;в качестве первого уровня.&nbsp;</span><strong>Batch Normalization</strong><span>&nbsp;для входа - это дополнительный уровень нормализации. Выполнение&nbsp;</span><strong>BN</strong><span>&nbsp;на самом входе иногда помогает устранить необходимость применения&nbsp;</span><em>Mean Normalization</em><span>&nbsp;ко входам.</span></p>
+<span class="image fit"><img src="images/malaria_19.jpg" alt="" /></span>
+<p><span>В строке 106 мы проходим по массиву уровней. Имейте в виду, что каждая запись в нем представляет собой целочисленное значение, указывающее, сколько остаточных модулей будет сложено поверх каждого следующего.&nbsp;</span><em>ResNet</em><span>&nbsp;попытается уменьшить использование пула насколько это возможно, полагаясь на слои CONV, чтобы уменьшить пространственные размеры. Чтобы уменьшить размер тома без объединения слоев, мы должны установить шаг свертки на строке 107. Если это первый вход на уровне, мы установим шаг в (1, 1), указывая, что не следует выполнять понижающую выборку. Тем не менее, для каждого последующего этапа мы будем применять&nbsp;</span><strong>residual module</strong><span>&nbsp;с шагом (2, 2), что позволит нам уменьшить размер тома. Затем проходим по слоям в строке 112 с уже фиксированным шагом (1,1).</span></p>
+<span class="image fit"><img src="images/malaria_20.jpg" alt="" /></span>	
+<p><span>Чтобы избежать использования плотных полностью связанных слоев, мы будем применять&nbsp;</span><strong>average pooling</strong><span>&nbsp;для уменьшения размера тома до&nbsp;</span><em>1 х 1 х classes</em><span>:</span></p>							
+<span class="image fit"><img src="images/malaria_21.jpg" alt="" /></span>
+<p><span>Мы применяем&nbsp;</span><em>Softmax Activation</em><span>&nbsp;(</span><a href="https://medium.com/data-science-bootcamp/understand-the-softmax-function-in-minutes-f3a59641e86dv" target="_blank" title="https://medium.com/data-science-bootcamp/understand-the-softmax-function-in-minutes-f3a59641e86d">подробно</a><span>) для получения конечных вероятностей на выходе. Полностью построенная модель ResNet затем возвращается в вызывающую функцию в строке 113.</span></p>
+<span class="image fit"><img src="images/malaria_22.jpg" alt="" /></span>
+<h2>Обучение сети (training.py)</h2>
+<p>Импортируем пакеты:</p>
+<span class="image fit"><img src="images/malaria_23.jpg" alt="" /></span>
+<p>Теперь давайте установим наши параметры обучения и определим нашу функцию снижения скорости обучения:</p>
+<span class="image fit"><img src="images/malaria_24.jpg" alt="" /></span>
+<p>В строках 143-145 мы определяем число эпох, начальную скорость обучения и размер пакета.</p>
+<span class="image fit"><img src="images/malaria_25.jpg" alt="" /></span>
+<p>Я обнаружил, что обучение с<span>&nbsp;</span><strong>NUM_EPOCHS</strong><span>&nbsp;</span>= 50 работает вполне неплохо (хотя думаю хватит и 20, прирост в точности на 50 не такой уж значительный).<span>&nbsp;</span><strong>BS</strong><span>&nbsp;</span>(размер пакета) = 32 подходит даже для обучения на ЦП, если достаточно терпения (на хорошей GPU можно поставить 64 или выше). Наш<span>&nbsp;</span><strong>INIT_LR</strong><span>&nbsp;</span>= 1e-1 (начальная скорость обучения) будет уменьшаться в соответствии с функцией<span>&nbsp;</span><strong>poly_decay</strong>.</p>
+<p>Наша функция<span>&nbsp;</span><strong>poly_decay</strong><span>&nbsp;</span>определена в строках 150-157. Эта функция поможет нам изменять<span>&nbsp;</span><em>learning rate</em><span>&nbsp;</span>после каждой эпохи. Мы устанавливаем мощность = 1,0, которая по сути превращает наш полиномиальный распад в линейный распад. Выходные данные мы отправим в последующем в<span>&nbsp;</span><strong>callback</strong><span>&nbsp;</span>-<span>&nbsp;</span><em>Learning Rate Scheduller</em>.</p>
+<span class="image fit"><img src="images/malaria_26.jpg" alt="" /></span>
+<p><span>Далее, давайте возьмем количество изображений в обучающих, проверочных и тестовых наборах, чтобы отобразить их в статистике и рассчитать число шагов в эпохе, используем код из</span><strong><span>&nbsp;</span>copy_datasamples.py</strong><span>:</span></p>
+<span class="image fit"><img src="images/malaria_27.jpg" alt="" /></span>
+<p>Далее мы используем аугментацию данных:</p>
+<span class="image fit"><img src="images/malaria_28.jpg" alt="" /></span>
+<p>Аугментация (дополнение, расширение) данных (<strong>Data Augmentation</strong>) включает в себя широкий спектр методов, используемых для создания новых обучающих образцов. По сути, мы применяем различные методы случайного незначительного трансформинга (трансляция, ротация и др.) изображений (без изменения метки класса данных) для повышения обобщающей способности модели. Учитывая, что наша сеть постоянно видит новые, слегка модифицированные версии входных данных, она способна генерить более надежные функции (на тестовые выборки эта методика не применяется). В большинстве случаев мы получим увеличение точности тестирования, хотя иногда и за счет небольшого падения точности обучения.</p>
+<p>В следующем блоке мы создим<span>&nbsp;</span><em>Keras генераторы</em>, используемые для загрузки изображений из входного каталога.</p>
+<span class="image fit"><img src="images/malaria_29.jpg" alt="" /></span>
+<p>Важно помнить, что функция<span>&nbsp;</span><strong>flow_from_directory<span>&nbsp;</span></strong>предполагает:</p>
+<p>- Наличие базового входного каталога для данных.</p>
+<p>- Внутри этого базового входного каталога есть N подкаталогов, где каждый подкаталог соответствует метке класса.</p>
+<p>Снабжаем генераторы параметрами:</p>
+<p>-<span>&nbsp;</span><strong>class_mode - categorical</strong></p>
+<p>- Изменяем размер всех изображений до<span>&nbsp;</span><em>64 х 64</em><span>&nbsp;</span>пикселей.</p>
+<p>- Устанавливаем цветовой канал (<strong>color_mode</strong>) "rgb".</p>
+<p>- Перемешиваем пути изображений,<span>&nbsp;</span><em>но только для тренировочного генератора!</em></p>
+<p>- Используем<span>&nbsp;</span><strong>BS</strong><span>&nbsp;</span>= 32.</p>
+<p>Теперь устанавливаем<span>&nbsp;</span><strong>ResNet</strong><span>&nbsp;</span>и описываем модель (строка 219):</p>
+
+<span class="image fit"><img src="images/malaria_30.jpg" alt="" /></span>
+<p>- Изображения имеют размер<span>&nbsp;</span><em>64 x 64 x 3</em><span>&nbsp;</span>(3-канала RGB).</p>
+<p>- Класса всего 2 (<em>Инфицированные и неинфицированные</em>).</p>
+<p>- ResNet выполнит (<em>3, 4, 6</em>) укладку с (<em>64, 128, 256, 512</em>) CONV слоями, подразумевая, что:</p>
+<p>= Первый слой CONV в ResNet, до уменьшения пространственных размеров, будет иметь всего 64 фильтра.</p>
+<p>= Затем мы сложим 3 набора остаточных модулей. Три слоя CONV в каждом остаточном модуле получат 32, 32 и 128 фильтров CONV соответственно.</p>
+<p>=Далее мы собираем 4 набора остаточных модулей, где каждый из трех уровней CONV будет иметь 64, 64 и 256 фильтров.</p>
+<p>=Наконец, мы объединяем 6 наборов остаточных модулей, где каждый уровень CONV получает 128, 128 и 512 фильтров. Затем применяется<span>&nbsp;</span><strong>SoftMax</strong>.</p>
+<p>В строке 220 инициализируется оптимизатор SGD (<a href="https://habr.com/ru/post/318970/">Градиентный спуск</a>) с начальным<span>&nbsp;</span><strong>learning rate</strong><span>&nbsp;</span>1e-1 и<strong><span>&nbsp;</span>momentum</strong><span>&nbsp;</span>(почти тоже, что BnMom) 0,9.</p>
+<p>В строках 221 и 222 мы используем в качестве функции потерь бинарную кроссэнтропию (<strong>binary_crossentropy</strong>), поскольку мы выполняем классификацию по 2 меткам. Для более чем двух классов я бы использовал<span>&nbsp;</span><em>categorycal_crossentropy</em>.</p>
+<p>На строке 225 мы задаем<strong><span>&nbsp;</span>callback</strong>. Callback&rsquo;и выполняются в конце каждой эпохи. Мы применяем наш<span>&nbsp;</span><strong>poly_decay</strong><span>&nbsp;</span><em>LearningRateScheduler<span>&nbsp;</span></em>для выгрузки статистики и изменения скорости обучения после каждой эпохи.</p>
+<span class="image fit"><img src="images/malaria_31.jpg" alt="" /></span>
+<p>Вызов<span>&nbsp;</span><strong>model.fit_generator</strong><span>&nbsp;</span>в строках 226-232 заставляет наш скрипт начать процесс обучения. Генератор<strong><span>&nbsp;</span>trainGen<span>&nbsp;</span></strong>автоматически (1) загрузит наши изображения с диска и (2) проанализирует метки классов. То же самое будет выполнять<span>&nbsp;</span><strong>valGen</strong>, но только для проверочной выборки.</p>
+<p>Теперь, когда эта модель обучена, мы можем оценить ее на тестовом наборе. Сбрасываем тестовый генератор перед оценкой, если этого не сделать, получим неверный отчет.</p>
+<span class="image fit"><img src="images/malaria_32.jpg" alt="" /></span>
+<p>Для оценки нашей модели мы сделаем прогнозы на тестовых данных и затем найдем метку с наибольшей вероятностью для каждого изображения в тестовой выборке (Строки 238-243).</p>
+<span class="image fit"><img src="images/malaria_33.jpg" alt="" /></span>
+<p>Затем отображаем отчет о классификации (строки 245-247). И с помощью matplotlib отображаем наш график точности и ошибки по отношению к эпохам. Сохраняем модель.</p>
+<span class="image fit"><img src="images/malaria_34.jpg" alt="" /></span>
+<h2>Оценка результатов обучения</h2>
+<p>Давайте оценим результаты нашего обучения</p>
+<span class="image fit"><img src="images/malaria_35.jpg" alt="" /></span>
+<span class="image fit"><img src="images/malaria_36.jpg" alt="" /></span>
+<p>На облачной GPU Tesla K80 процесс обучения занял чуть больше 2 часов. Мы добились точности<span>&nbsp;</span><strong>98.13% на тренировочной</strong>,<span>&nbsp;</span><strong>98.26% на обучающей</strong><span>&nbsp;</span>и<span>&nbsp;</span><strong>98% на тестовой выборке<span>&nbsp;</span></strong>(<em>хех, это я еще с random.seed не баловался</em>), а соотношения на графике указывают на валидность модели. В общем, мы перебили результат AlexNet и даже сравнялись с GoogLeNet на большей выборке (теплое с мягким). Объем конечной модели без квантования весов составил около 16 МБ и теперь мы упакуем его в приложение.</p>
+<p>Далее почти не будет исходников, я лишь пролью свет на некоторые нюансы в сборке локальной модели, а затем приложу скрины и описание тестирования некоторых данных в приложении.</p>
+<h2>Мобильное приложение</h2>
+<p>Для создания локальной модели нужно использовать<span>&nbsp;</span><a href="https://firebase.google.com/products/ml">Google ML Kit for Firebase (документация)</a>, модель нужно сохранить сначала в формате pb через (<em>session = K.get_session(); K.set_session(session)</em>). Затем конвертировать в формат TFlite через два скрипта (<em>freeze_graph --input_binary=false --input_graph=trained_model.pbtxt --output_node_names=result/Softmax --output_graph=freeze_model.pb --input_checkpoint=final_model.ckpt</em>). А в<span>&nbsp;</span><strong>build.gradle</strong><span>&nbsp;</span>добавить запись<span>&nbsp;</span><em>aaptOptions { noCompress "tflite" }</em>, чтобы отключить сжатие. Подробности в<span>&nbsp;</span><a href="https://firebase.google.com/products/ml">документации</a>. Процесс создания apk можно опустить, так как к основной теме статьи он не относится.</p>
+<p>В общем, в конце концов я апнул нашу модель в apk. Но добавлять автоматическое определение клеток и их подсчет мне было уже совсем скучно &ndash; задача возможно и нетривиальная (<em>скорее муторная</em>), но вполне решаемая с помощью OpenCV. Мне кажется, можно будет обойтись исключительно компьютерным зрением, без использования машинного обучения,<span>&nbsp;</span><em>хотя я бы и сюда его добавил</em>:</p>
+<span class="image fit"><img src="images/malaria_37.jpg" alt="" /></span>
+<p>Итак, так как автоматически наши изображения не кропаются, я нашел снимок поля зрения для анализа в интернете и ручками выделил в нем 50 клеток, из которых 45 нормальных и 5 зараженных (<em>ИМХО конечно, я не уверен</em>).</p>
+<p>Вот такие результаты получились в приложении без подключения к интернету (<em>удивительно, но обработалось все очень быстро, хотя у меня и довольно бюджетный девайс</em>):</p>
+<span class="image fit"><img src="images/malaria_38.jpg" alt="" /></span>
+<p>Нейросеть успешно классифицировала все 50 изображений, и, по сути, сравнялась со мной в точности определения инфицированных клеток (<em>не знаю хорошо это или плохо)), я даже кубический от призматического эпителия сейчас не отличу</em>). Также пробовал закидывать данные из выборок и получал сопоставимые с<span>&nbsp;</span><strong>98%</strong><span>&nbsp;</span>точностью ответы.</p>
+<p>В итоге большая часть поставленных в начале целей достигнута. Подобные техники можно использовать для внедрения методик автоматической классификации практически в любой сфере лабораторной диагностики, при условии конечно достаточного объема грамотно собранных и размеченных обучающих данных.</p>
+<p><em>Статьи, архив с датасетом и файлы приложу к публикации и на<span>&nbsp;</span><a href="https://drive.google.com/drive/folders/1U1OECwsjVKiapN6ZvxQjchXV54cub7xX">Google Drive (Скачать)</a>. Также позже добавлю в GDrive .ipynb файл и ссылку на Google Colab.</em></p>
 
 
-
-									
-								</section>
+</section>
 								
 								<ul class="icons">
 									<li><strong>Поделиться: </strong></li>
