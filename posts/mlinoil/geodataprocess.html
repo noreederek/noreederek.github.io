@@ -1,0 +1,164 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>ML в нефтегазовой отрасли</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
+		<link rel="stylesheet" href="../../assets/css/blog.css" />
+		<link href="../../assets/css/prism.css" rel="stylesheet" />
+	</head>
+	<body class="is-preload">
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+						<div class="inner">
+
+							<!-- Header -->
+							<header id="header">
+								<p id="headerlogo"><a href="#" class="logo"><strong>Mayorov</strong>Blog</a></p>
+								<ul class="icons">
+									<li><a title="About Me" href="https://noreederek.github.io" class="icon fa-address-card"><span class="label">About Me</span></a></li>
+									<li><a title="My GitHub" href="https://github.com/noreederek" class="icon brands alt fa-github"><span class="label">GitHub</span></a></li>
+									<li><a title="Telegram" href="tg://resolve?domain=Jim_Root" class="icon brands alt fa-telegram-plane"><span class="label">Telegram</span></a></li>
+								</ul>
+							</header>
+
+							<!-- Content -->
+								<section>
+									<header class="main">
+										<h1>React 17: улучшения в JSX</h1>
+									</header>
+									<div class="chip">
+										<div class="chip-content">02 Декабря 2020</div>
+									</div>
+
+									<span class="image main"><img src="images/react17.jpg" alt="" /></span>
+
+									<p> В данной статье я приведу простой пример того, как можно использовать методики глубокого обучения (а в частности, CNN и библиотеку Keras) для анализа 
+										изображений при автоматическом тестировании на малярию. Статья вдохновлена двумя работами - 
+										<a href="https://ieeexplore.ieee.org/document/7897215" target="_blank">Evaluations of CNNs for Auto-Identiﬁcation of Malaria Infected Bloodcells</a> (Y. Dong и др) 
+										<strong>2017 года</strong> и <a href="https://ieeexplore.ieee.org/document/7822567" target="_blank">CNN-Based 
+											Analysis for Malaria Diagnostic</a> (Z. Liang и др.) от <strong>конца 2016</strong> (читайте через SciHub или посмотрите в приложенные мной PDF 
+											(<a href="https://drive.google.com/drive/folders/1U1OECwsjVKiapN6ZvxQjchXV54cub7xX" target="_blank">Google Drive</a>)). 
+											В работе <strong>2017</strong> года при классификации сравниваются три популярные на тот момент архитектуры нейронных сетей (LeNet, AlexNet and GoogLeNet) на их 
+											собственном закрытом датасете из около <em>3500 изображений эритроцитов</em>. В работе же <strong>2016</strong> используется уже открытый датасет из более 
+											чем <em>27000 изображений</em> и модифицированная архитектура AlexNet.</p>
+									<p>Хотя Y. Dong и удалось достичь точности около 98% на GoogLeNet, их набор данных значительно меньше. Поэтому, чтобы не сравнивать теплое с мягким, при сопоставлении я 
+										буду отталкиваться от работы Z. Liang с их точностью на AlexNet около 97%. Я попробую использовать при обучении более современную архитектуру ResNet, чтобы достичь 
+										более высокой точности модели при классификации клеток (вероятно при использовании какого-либо ансамбля архитектур, можно было бы добиться больших показателей, но это 
+										отрицательно скажется, как на скорости обучения, так и на конечном размере модели). Затем мы упакуем НС в мобильное приложение и протестируем ее производительность 
+										локально на смартфоне без подключения к сети.</p>
+									<hr class="major" />
+									<span class="image fit"><img src="images/malaria_1.jpg" alt="" /></span>
+									<p class="italictext">Показатели точности нейросетей Dong и Liang</p>
+									<p>Дабы не капитанствовать и не лить много воды, описывать этиологию и эпидемиологию малярии я не буду. Лишь скажу, что микроскопия толстого и тонкого мазков крови – самый 
+										распространенный метод ее диагностики, особенно в странах третьего мира (другие методики: определение антител к возбудителю малярии, определение белков возбудителя, 
+										ПЦР, экспресс-тесты и др.)</p>
+									<p>Также стоит отметить, что существуют современные микроскопические комплексы для автоматической диагностики малярии, например, 
+										<a href="https://doc.westmedica.com/47EN/focus_brochures/vision_hema_malaria_rev_7.0_12.2016_focus_brochure_en.pdf">Vision Hema® Malaria</a>, 
+										в которых также используются методы машинного обучения. Но вышеуказанные работы и дальнейший техрепорт показывают, что необязательно запихивать функционал 
+										из 400 строк кода в увесистый диагностический комбайн, когда можно уместить его на ладони.</p>
+										<span class="image fit"><img src="images/malaria_2.jpg" alt="" /></span>
+									<p>
+										Итак, теперь определимся с целями. Я постараюсь:<br>
+										- Обучить нейросеть c архитектурой ResNet на данных из работы Z. Liang определять пораженные клетки c сопоставимой (а лучше с более высокой) точностью.
+										<br>
+										- Подробно описать структуру проекта и сети.
+										<br>
+										- Упаковать НС в приложение и запустить не в облаке, а локально на устройстве (благо Keras позволяет это легко сделать).
+										<br>
+										- <s>Добавить автоматическое распознавание клеток в поле зрения, осуществлять их подсчет и степень паразитемии</s> (upd: на этом этапе мне стало лень).
+									</p>
+
+									<h2>Датасет</h2>
+									<p>Датасет представлен снимками отдельных эритроцитов с тонких мазков крови в архиве <em>cell_image.zip</em> 
+										(<a href="https://drive.google.com/drive/folders/1U1OECwsjVKiapN6ZvxQjchXV54cub7xX" target="_blank">Google Drive</a>) 
+										от <strong>NIH School of Medicine University of Missouri, Columbia</strong>.</p>
+										<span class="image fit"><img src="images/malaria_3.jpg" alt="" /></span>
+									<pre><code class="language-css">p { color: red }</code></pre>
+									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fergiat. Pellentesque in mi eu massa lacinia malesuada et a elit. Donec urna ex, lacinia in purus ac, pretium pulvinar mauris. Curabitur sapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit.</p>
+									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dapibus rutrum facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam tristique libero eu nibh porttitor fermentum. Nullam venenatis erat id vehicula viverra. Nunc ultrices eros ut ultricies condimentum. Mauris risus lacus, blandit sit amet venenatis non, bibendum vitae dolor. Nunc lorem mauris, fringilla in aliquam at, euismod in lectus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In non lorem sit amet elit placerat maximus. Pellentesque aliquam maximus risus, vel sed vehicula. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fersapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique lorem ipsum dolor.</p>
+
+									<hr class="major" />
+
+									<h2>Magna etiam veroeros</h2>
+									<pre><code class="language-python">
+import requests
+import url
+
+for i in range(100):
+	print("Test")
+									</code></pre>
+									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dapibus rutrum facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam tristique libero eu nibh porttitor fermentum. Nullam venenatis erat id vehicula viverra. Nunc ultrices eros ut ultricies condimentum. Mauris risus lacus, blandit sit amet venenatis non, bibendum vitae dolor. Nunc lorem mauris, fringilla in aliquam at, euismod in lectus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In non lorem sit amet elit placerat maximus. Pellentesque aliquam maximus risus, vel sed vehicula.</p>
+									<p>Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fersapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit tristique lorem ipsum dolor.</p>
+
+									<hr class="major" />
+
+									<h2>Lorem aliquam bibendum</h2>
+									<pre><code class="language-js">
+// Sidebar.
+var $sidebar = $('#sidebar'),
+	$sidebar_inner = $sidebar.children('.inner');
+
+// Inactive by default on <= large.
+	breakpoints.on('<=large', function() {
+		$sidebar.addClass('inactive');
+	});
+
+	breakpoints.on('>large', function() {
+		$sidebar.removeClass('inactive');
+	});
+
+// Hack: Workaround for Chrome/Android scrollbar position bug.
+	if (browser.os == 'android'
+	&&	browser.name == 'chrome')
+		$('<style>#sidebar .inner::-webkit-scrollbar { display: none; }</style>')
+			.appendTo($head);
+									</code></pre>
+									<p>Donec eget ex magna. Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque venenatis dolor imperdiet dolor mattis sagittis. Praesent rutrum sem diam, vitae egestas enim auctor sit amet. Pellentesque leo mauris, consectetur id ipsum sit amet, fergiat. Pellentesque in mi eu massa lacinia malesuada et a elit. Donec urna ex, lacinia in purus ac, pretium pulvinar mauris. Curabitur sapien risus, commodo eget turpis at, elementum convallis elit. Pellentesque enim turpis, hendrerit.</p>
+									<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis dapibus rutrum facilisis. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Etiam tristique libero eu nibh porttitor fermentum. Nullam venenatis erat id vehicula viverra. Nunc ultrices eros ut ultricies condimentum. Mauris risus lacus, blandit sit amet venenatis non, bibendum vitae dolor. Nunc lorem mauris, fringilla in aliquam at, euismod in lectus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. In non lorem sit amet elit placerat maximus. Pellentesque aliquam maximus risus, vel sed vehicula.</p>
+
+								</section>
+								
+								<ul class="icons">
+									<li><strong>Поделиться: </strong></li>
+									<li><a title="Share with Facebook" href="javascript: void(0)" class="icon brands alt fa-facebook"
+										onClick="window.open('https://www.facebook.com/sharer.php?u=' + window.location.href,'sharer','status=0,toolbar=0,width=650,height=500');">
+									<span class="label">Facebook</span></a></li>
+									<li><a title="Share with VK" href="javascript: void(0)" class="icon brands alt fa-vk"
+										onClick="window.open('https://vkontakte.ru/share.php?url=' + window.location.href,'sharer','status=0,toolbar=0,width=650,height=500');">
+									<span class="label">VK</span></a></li>
+									<li><a title="Telegram" href="javascript: void(0)" class="icon brands alt fa-telegram-plane"
+										onClick="window.open('https://telegram.me/share/url?url=' + window.location.href,'sharer','status=0,toolbar=0,width=650,height=500');">
+									<span class="label">Telegram</span></a></li>
+									<li><a title="Twitter" href="javascript: void(0)" class="icon brands alt fa-twitter"
+										onClick="window.open('https://twitter.com/intent/tweet?text=' + 'Hey, checkout this post! ' + window.location.href,'sharer','status=0,toolbar=0,width=650,height=500');">
+									<span class="label">Twitter</span></a></li>
+								</ul>
+
+						</div>
+					</div>
+
+				<!-- Sidebar -->
+				<div id="sidebar">
+					<div class="inner">
+						<html-include src="mlinoil_sidepanel.html"></html-include>
+					</div>
+				</div>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="../../assets/js/jquery.min.js"></script>
+			<script src="../../assets/js/browser.min.js"></script>
+			<script src="../../assets/js/breakpoints.min.js"></script>
+			<script src="../../assets/js/util.js"></script>
+			<script src="../../assets/js/prism.js"></script>
+			<script src="../../assets/js/blog.js"></script>
+			<script src="../../assets/js/html-include.js"></script>
+
+	</body>
+</html>
