@@ -2,17 +2,52 @@
 <html>
 
 <head>
-  <title>Mayorov Yuri - Fullstack Dev, Data Scientist</title>
+  <title>Mayorov Yuri (Майоров Юрий) - Software Architect, Fullstack Dev, Data Scientist</title>
   <meta charset="utf-8" />
+  <meta property="og:title" content="Mayorov Yuri (Майоров Юрий) - Software Architect, Fullstack Dev, Data Scientist">
+  <meta property="og:description" content="Personal Website and Blog - Личный сайт и блог">
+  <meta property="og:image" content="https://mayorovyuri.eu/images/site_preview.webp">
+  <meta property="og:url" content="https://mayorovyuri.eu">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name"
+    content="Mayorov Yuri (Майоров Юрий) - Software Architect, Fullstack Dev, Data Scientist">
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-  <meta http-equiv = "refresh" content = "5; url = https://www.mayorovyuri.eu" />
+  <meta name="description" content="Hi, I am Yuri Mayorov - Software Architect | Fullstack Developer | ML Enthusiast">
+  <meta name="keywords" content="Fullstack, frontend, Yuri Mayorov, resume, cv, projects, skills">
+  <meta name="author" content="Yuri Mayorov (Юрий Майоров)">
+
   <link rel="stylesheet" href="assets/css/main.css" rel="stylesheet" rel="preload" as="style"
     onload="this.rel='stylesheet'" />
   <link href="assets/css/all.min.css" rel="stylesheet" rel="preload" as="style" onload="this.rel='stylesheet'">
-  <link rel="shortcut icon" type="image/x-icon" href="favicon.ico">
+  <link rel="stylesheet" href="assets/css/splide.min.css" rel="preload" as="style" onload="this.rel='stylesheet'">
+  <link rel="shortcut icon" type="image/x-icon" href="https://mayorovyuri.eu/favicon.ico">
+  <link rel="icon" type="image/x-icon" href="https://mayorovyuri.eu/favicon.ico">
   <noscript>
     <link rel="stylesheet" href="assets/css/noscript.css" />
   </noscript>
+  <style>
+    #banner::after {
+      background-color: #000312;
+    }
+  </style>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function () {
+      new Splide('#education-slides', {
+        type: 'loop',
+        autoplay: true,
+        gap: '1.05em'
+      }).mount();
+    });
+
+    document.addEventListener('DOMContentLoaded', function () {
+      new Splide('#ach-slides', {
+        type: 'loop',
+        autoplay: true,
+        gap: '1.05em'
+      }).mount();
+    });
+  </script>
 </head>
 
 <body class="is-preload">
@@ -23,27 +58,483 @@
     <!-- Header -->
     <header id="header" class="alt">
       <a href="/" class="logo"><strong>Mayorov</strong> <span>Yuri</span></a>
+      <nav>
+        <a href="#menu">Menu</a>
+      </nav>
     </header>
 
+    <!-- Menu -->
+    <nav id="menu">
+      <ul class="links">
+        <li><a href="#aboutme">навыки</a></li>
+        <li><a href="#work">опыт работы</a></li>
+        <li><a href="#education">образование</a></li>
+        <li><a href="#achievements">достижения</a></li>
+        <li><a href="#one">проекты</a></li>
+        <li><a href="#contact">контакты</a></li>
+      </ul>
+    </nav>
+
     <!-- Banner -->
-    <section id="one" class="major">
+    <section id="banner" class="major">
       <div class="inner">
         <header class="major">
+
           <h1>
             <span class="txt-rotate" data-period="2000"
               data-rotate='[ "Hello", "Привет", "Bonjour", "Вітаю", "Guten Tag", "今日は", "السلام عليكم", "Aloha" ]'>
-            </span>,<br>😶‍🌫️ I moved my website <br> to <a href="https://mayorovyuri.eu">MAYOROVYURI.EU <br> you will be redirected <br> in 5 seconds</a>
+            </span>,<br>я перенес свои сайт и блог <br> на <a href="https://mayorovyuri.eu">MAYOROVYURI.EU</a>
           </h1>
         </header>
         <div class="content">
-          <p>Mayorov Yuri - Software Architect | Full-Stack Developer | ML Enthusiast</p>
+          <p id="redirectMessage" style="text-shadow: 1px 1px 2px #ffffff;">Перекину вас на новый сайт через <span id="secondsTillRedirect"
+              style="font-size: large;">15</span> секунд</p>
           <ul class="actions">
-            <li><a href="https://mayorovyuri.eu" class="button next">New site</a></li>
-            <li><a href="https://mayorovyuri.eu/blog" class="button primary">My Blog <i class="fa fa-code" aria-hidden="true"></i></a></li>
+            <li><a href="#aboutme" class="button scrolly">Остаться здесь <i class="fa fa-angle-double-down"
+                  aria-hidden="true"></i></a></li>
           </ul>
         </div>
       </div>
     </section>
+
+    <!-- Main -->
+    <div id="main">
+      <!-- Two -->
+      <section id="aboutme">
+        <div class="inner">
+          <div class="row">
+            <div class="col-12">
+
+              <p><span class="image left"><img src="images/my_avatar.jpg" alt="Avatar"
+                    style="width: 4em; border-radius: 50%;"></span>
+                <strong>Юрий Майоров</strong><br />
+                <span class="work-badge-green"><span class="work-badge-green-dot"></span>Open To Work</span>
+              <blockquote style="font-style: normal;"> Привет! Я Fullstack‑разработчик с более чем 5‑летним опытом
+                работы над проектами со сложной распределённой архитектурой, где применяются машинное обучение,
+                искусственный интеллект и ресурсоёмкие вычисления в нефтегазовой отрасли. Работаю в крупнейшей в мире
+                нефтегазовой компании. Открыт для новых профессиональных вызовов и интересных проектов.</blockquote>
+              </p>
+            </div>
+          </div>
+          <h2 id="content" style="white-space:nowrap; display: flex; align-items: center;"><i class="fa fa-code"></i>
+            &nbsp; Навыки
+            <div class="skills-icons" style="display:flex;gap:1em;margin-left:1em;align-items:center;">
+              <img src="images/skill-ts.svg" width="48" height="48" alt="TypeScript" aria-label="TypeScript" />
+              <img src="images/skill-python.svg" width="48" height="48" alt="Python" aria-label="Python" />
+              <img src="images/skill-rust.svg" width="48" height="48" alt="Rust" aria-label="Rust" />
+              <img src="images/skill-go.svg" width="48" height="48" alt="Go" aria-label="Go" />
+            </div>
+          </h2>
+          <div class="row">
+            <div class="col">
+              <ul class="alt">
+                <li><span class="square-badge-blue">BACKEND</span> TypeScript/JavaScript (Node.js, Express); Python
+                  (FastAPI, Reflex); Rust (Axum); Go (Gin); REST API,
+                  gRPC, OpenAPI, protobuf; Apache Kafka; PostgreSQL, ClickHouse, MongoDB, Redis, OSI Soft PI</li>
+                <li><span class="square-badge-blue">FRONTEND | DESKTOP | MOBILE</span> React, React Router, Redux
+                  Toolkit, React/RTK Query, React Hook Forms, Electron,
+                  jQuery, SCSS, CSS, HTML, Микрофронтенды (Webpack Module Federation), React Native, zod, MUI, Tailwind,
+                  Jest;
+                  d3.js, plotly.js, three.js, highcharts</li>
+                <li><span class="square-badge-blue">АРХИТЕКТУРА | DEVOPS</span> Docker, Kubernetes, OpenShift, GitLab
+                  CI, GCP; Prometheus, Grafana</li>
+                <li><span class="square-badge-blue">МАШИННОЕ ОБУЧЕНИЕ | ИИ</span> XGBoost, CatBoost, TensorFlow,
+                  PyTorch,
+                  vLLM; pandas, polars, numpy; NVIDIA Triton, Airflow;</li>
+                <li><span class="square-badge-blue">БЛОКЧЕЙН</span> Solana, Solidity, Ethers, Hardhat, Anchor</li>
+                <li><span class="square-badge-blue">УПРАВЛЕНИЕ КОМАНДОЙ</span> Git, GitLab, MS Project, MS
+                  Planner, MS Teams, JIRA</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Working Experience -->
+      <section id="work">
+        <div class="inner">
+          <h2 id="content"><i class="fa fa-briefcase" aria-hidden="true"></i> Опыт работы -
+            <i><span id="work-years"></span></i>
+          </h2>
+          <div id="aramco-experience">
+            <h5><span class="image left" style="width: 200px;"><a href="https://aramco.com"><img
+                    src="images/Saudi-Aramco-logo.png" alt="Saudi Aramco" /></a></span><a
+                href="https://aramco.com">Saudi Aramco - Artificial Intelligence
+                and
+                Data Analysis Department of Production Technology Division</a>
+            </h5>
+            <h4>SENIOR FULLSTACK DEVELOPER (Team Lead)</h4>
+            <h5>Ноябрь 2020 - Настоящее время</h5>
+
+            <h4>Production Intelligence Platform</h4>
+            <p>Модульный super-app для нефтегазовой отрасли, объединяющий сервисы ML Driven Flow Metering, Flow
+              Simulation, Asset Management, Production Optimization и другие в единую систему управления промысловыми
+              операциями.</p>
+            <div class="box aramco-expec-arc-responsive" id="aramco-expec-arc">
+              <span class="image fit"><img src="images/aramco-expec-arc.jpg" style="border-radius: 25px;"
+                  alt="" /></span>
+
+              <p style="font-size: 0.7em;">The Exploration and Petroleum Engineering Center - Advanced Research Center
+                (EXPEC ARC) <br><br>
+                📍 Дахран, Саудовская Аравия
+              </p>
+              <p style="font-size: 0.8em;">Saudi Aramco это государственная нефтяная и газовая компания, которая является
+                национальной нефтяной компанией
+                Саудовской Аравии. На 2022 год она является второй по величине компанией в мире по выручке</p>
+            </div>
+            <ul>
+              <li>Спроектировал и возглавил разработку интегрированной платформы из 30+ сервисов (Python (FastAPI,
+                Reflex), TypeScript (Express), Rust (Axum), Go (Gin)). Реализовал значительную часть модулей.</li>
+              <li>Разработал унифицированные boilerplate-шаблоны для приложений с полной настройкой пайплайнов,
+                интеграцией observability-стека, реализацией паттернов устойчивости, подключением к БД и внешним API
+                (OSI Soft PI Server, NVIDIA Triton Inference Engine (LLM) и др.). Обеспечил консистентность кода между
+                командами и ускорил вывод новых сервисов на рынок.</li>
+              <li>Реализовал микрофронтенд-архитектуру на базе Webpack Module Federation, позволившую быстро
+                интегрировать в платформу фронтенды как на React, так и на Dashboard-фреймворках (Reflex, Taipy).
+                Boilerplate-микрофронтенд, созданный для унификации разработки, включал общий стейт микрофронтендов,
+                стейт-менеджер приложения, интеграцию с AI (LLM) API, WASM-модуль, типизацию, линтер, форматтер, примеры
+                взаимодействий, CI/CD, тестирование и документацию. Разработал общий AI-модуль для всех сервисов
+                (results explanation, chat with LLM).</li>
+            </ul>
+
+            <p>Внедрение платформы позволило сократить операционные расходы на $15 млн ежегодно за счет автоматизации
+              рутинных задач и повышения качества принятия решений на основе данных.</p>
+
+
+            <h3>ML Driven Flow Metering</h3>
+            <p>Сервис виртуального измерения дебита на основе машинного обучения, объединяющий physics-based модели с
+              ML-алгоритмами для мониторинга многофазных потоков в реальном времени.</p>
+            <div id="read-more-overlay" class="read-more-overlay" onclick="toggleReadMore()">
+              <div class="fade-gradient"></div>
+              <div class="read-more-text">
+                <span>Читать полностью</span>
+                <i class="fa fa-chevron-down"></i>
+              </div>
+            </div>
+            <div id="additional-content" class="additional-content">
+              <ul>
+                <li>Реализовал бэкенд с использованием Axum (Rust) для высокопроизводительной обработки данных, FastAPI
+                  (Python) для ML-сервисов, Gin (Go) и Express (TypeScript) для остальных компонентов. Разработал
+                  унифицированные компоненты для инференса ML-моделей в NVIDIA Triton (ONNX Runtime). Интегрировал
+                  observability-стек (логирование, метрики, трассировка) и паттерны устойчивости (circuit breaker, retry
+                  policies).</li>
+                <li>Фронтенд построен на React и включал интерактивные дашборды для визуализации потоков в реальном
+                  времени, инструменты исследовательского анализа данных (correlation heatmaps, time series
+                  decomposition, feature importance visualization — plotly, highcharts, d3), интерфейс для обучения и
+                  дообучения ML-моделей.</li>
+                <li>Разработал базовые ML-модели (baseline) с использованием CatBoost, XGBoost и PyTorch. Многие из них
+                  остались в продакшене благодаря лучшему соотношению скорости и точности. Внедрил систему адаптивного
+                  дообучения с автоматическим drift detection. Добавил physics-based проверки на консистентность входных
+                  данных и выявление аномалий.</li>
+              </ul>
+
+              <p>Применение ML Driven Virtual Flow Metering вместо физических расходомеров стоимостью $500k+
+                обеспечивает экономию до $3 млн ежегодно на одной крупной платформе за счет снижения расходов на
+                обслуживание оборудования, сокращения простоев и повышения точности планирования.</p>
+
+              <h3>Flow Simulator</h3>
+              <p>Симулятор многофазных потоков для моделирования гидродинамических процессов на основе дебита,
+                PVT-свойств, геометрии системы и других параметров (аналог Schlumberger PIPESIM и OLGA).</p>
+
+              <ul>
+                <li>Реализовал компоненты солвера на Rust и кроссплатформенный GUI на React. Разработал архитектуру
+                  приложения и pipeline сборки, позволяющий автоматически формировать единую кодовую базу в
+                  web-версию на Express и в desktop-приложение на Electron. Создал алгоритм пакетного выполнения
+                  множества расчетных кейсов с рекомбинируемыми параметрами.</li>
+                <li>Реализовал систему отображения результатов расчетов на геометрии скважины в виде цветовых карт и
+                  графиков вдоль траектории. Разработал сложные UI-компоненты для задания параметров симуляции:
+                  drag-and-drop, редакторы PVT-таблиц, интерактивные формы ввода параметров, валидацию данных и импорт
+                  из Excel/CSV.</li>
+              </ul>
+
+              <p>Разработка позволила частично отказаться от дорогостоящих коммерческих лицензий, обеспечив экономию ~$2
+                млн в год.</p>
+
+              <h3>Другие проекты</h3>
+              <p>Также участвовал в проектах с использованием TensorFlow, OpenCV, Three.js, D3.js: разработка системы
+                интеллектуального анализа геологических данных GeoMind с автоматической интерпретацией сейсмики на базе
+                transformer-моделей, сервиса оптимизации размещения скважин и системы планирования разработки
+                месторождений.</p>
+
+              <hr>
+              <div class="row gtr-200">
+                <div class="col">
+                  <h4><code>FREELANCE TEAM</code></h4>
+                  <h4>FULLSTACK DEVELOPER</h4>
+                  <h5>Сентябрь 2019 - Октябрь 2020 </h5>
+                  <ul>
+                    <li>Создал NFT-маркетплейс на Ethereum с использованием Solidity для смарт-контрактов стандарта
+                      ERC-721, включающий функционал минтинга, трейдинга и стейкинга уникальных цифровых активов.</li>
+                    <li>Разрабатывал систему поиска технической документации в PDF для компании электронного
+                      проектирования CELUS (Elasticsearch, Flask, PDF.js).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="education">
+        <div class="inner">
+          <h2 id="content"><i class="fas fa-graduation-cap"></i> Образование</h2>
+          <div class="row gtr-200">
+            <div class="col-6 col-12-medium">
+              <h4>École 42 Paris Tech (Computer Science)</h4>
+              <p><span class="image left"><a href="https://www.42network.org/"><img src="images/42.png"
+                      alt="" /></a></span>
+                42 Paris École, известная как <a href="https://42.fr/en/homepage/">42</a>, — это
+                инновационное высшее учебное заведение в Париже, Франция, предлагающее уникальную бесплатную программу
+                по
+                информатике. Предлагает дипломы, сертифицированные RNCP (бакалавр – 180 ECTS; магистр – 120 ECTS), 42
+                пропагандирует методику peer-to-peer и делает упор на
+                проектное обучение и решение реальных задач.
+              </p>
+              <h5>Master Degree RNCP 7 : Expert en Architecture Informatique </h5>
+              <ul>
+                <li>
+                  <img src="images/diploma.svg" width="24" height="24" alt="View Attestation on Credly.com"
+                    aria-label="View Attestation on Credly.com" style="vertical-align: middle;" />
+                  <a href="https://www.credly.com/badges/c5287912-f3b6-48fe-ba6a-b35ff2c3eb24/public_url">
+                    Architecture de bases de données et Data (Архитектура баз данных) <code>2022 - 2024</code>
+                  </a>
+                </li>
+              </ul>
+              <h5>Bachelor Degree RNCP 6 : Développeur de solutions informatiques </h5>
+              <ul>
+                <li>
+                  Développement d’application web & mobile (Web и мобильная разработка)
+                  <code>2019 - 2022</code>
+                </li>
+              </ul>
+
+
+            </div>
+            <div class="col-6 col-12-medium">
+              <div id="education-slides" class="splide">
+                <div class="splide__track">
+                  <ul class="splide__list">
+                    <li class="splide__slide"><span class="image fit"><img src="images/42_1.jpg"
+                          style="border-radius: 25px;" alt="" /></span></li>
+                    <li class="splide__slide"><span class="image fit"><img src="images/42_3.jpg"
+                          style="border-radius: 25px;" alt="" /></span></li>
+                    <li class="splide__slide"><span class="image fit"><img src="images/42_2.webp"
+                          style="border-radius: 25px;" alt="" /></span></li>
+                    <li class="splide__slide"><span class="image fit"><img src="images/42_4.jpg"
+                          style="border-radius: 25px;" alt="" /></span></li>
+                    <li class="splide__slide"><span class="image fit"><img src="images/42_5.jpg"
+                          style="border-radius: 25px;" alt="" /></span></li>
+                  </ul>
+                </div>
+              </div>
+              <p style="font-size: 0.7em; text-align: center;">Кампус 42 в Париже (NOC) и Forty2 - внешний кампус с
+                видом на Форт Боярд
+              </p>
+              <p>
+                Сегодня сеть 42 охватывает десятки государств и формирует глобальное сообщество студентов и выпускников.
+                Кампусы действуют в Европе, Северной и Южной Америке, Африке и Азии; первые появились в Париже
+                и Сан-Франциско, далее сеть расширилась на страны ЕС (включая Германию,
+                Нидерланды, Бельгию, Испанию, Португалию, Финляндию), Восточную Европу (включая Румынию, Болгарию), а
+                также ЮАР и ряд локаций в Латинской Америке и Азии.
+              </p>
+
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Achievements -->
+      <section id="achievements">
+        <div class="inner">
+          <h2 id="content"><i class="fas fa-trophy"></i> Достижения</h2>
+          <div class="row gtr-200">
+            <div class="col-6 col-12-medium">
+
+              <div id="ach-slides" class="splide">
+                <div class="splide__track">
+                  <ul class="splide__list">
+                    <li class="splide__slide"><span class="image fit"><img src="images/ach1.jpg"
+                          style="border-radius: 25px;" alt="" /></span></li>
+                    <li class="splide__slide"><span class="image fit"><img src="images/ach2.jpg"
+                          style="border-radius: 25px;" alt="" /></span></li>
+                    <li class="splide__slide"><span class="image fit"><img src="images/ach3.jpg"
+                          style="border-radius: 25px;" alt="" /></span></li>
+                  </ul>
+                </div>
+              </div>
+              <h4> Финалист <i class="fab fa-yandex-international"></i>andex Data Science Contest 2019</h4>
+              <h4>Победитель грантового конкурса “UMNIK 2018” - Track “HealthNet”</h4>
+            </div>
+            <div class="col-6 col-12-medium">
+              <h4>Победы на Хакатонах: </h4>
+              <ul class="alt">
+                <li><a
+                    href="https://gs-labs.ru/news/v-finale-studencheskogo-konkursa-programmiruy-budushchee-opredelili-troyku-luchshikh-proektov-/">III
+                    Всероссийский конкурс “Программируй будущее 2020” -
+                    1-е место (5000$ | 300 000 &#8381;)</a></li>
+                <li><a href="https://vk.com/wall-167479002_8873">GreenAtom Hack 2019 – Track “Machine Learning” - 1-е
+                    место
+                    (4200$ | 250 000 &#8381;)</a></li>
+                <li>PhotoLabHack - 2-е место (1700$ | 100 000 &#8381;)</li>
+                <li>PhotoHack Mobile - 3-е место (1300$ | 80 000 &#8381;)</li>
+                <li>Global City Hackathon - Track “Smart City”</li>
+                <li>Hack.Genesis - Track “ChemRar” - 3-е место (1000$ | 60 000 &#8381;) и другие</li>
+              </ul>
+
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- One -->
+      <section id="one" class="tiles">
+        <article>
+          <span class="image">
+            <img src="images/matcha_preview.jpg" alt="" />
+          </span>
+          <header class="major">
+            <h3><a href="projects/match" class="link">MATCH</a></h3>
+            <p>Приложение для знакомств</p>
+          </header>
+        </article>
+        <article>
+          <span class="image">
+            <img src="images/camagru_preview.jpg" alt="" />
+          </span>
+          <header class="major">
+            <h3><a href="projects/camagru" class="link">CAMAGRU</a></h3>
+            <p>Проект, похожий на Snapchat</p>
+          </header>
+        </article>
+        <article>
+          <span class="image">
+            <img src="images/21friends_preview.jpg" alt="" />
+          </span>
+          <header class="major">
+            <h3><a href="projects/21friends" class="link">21FRIENDS</a></h3>
+            <p>Мой локатор для 42 Ecole</p>
+          </header>
+        </article>
+        <article>
+          <span class="image">
+            <img src="images/showroom_preview.jpg" alt="" />
+          </span>
+          <header class="major">
+            <h3><a href="projects/showroom" class="link">SHOWROOM</a></h3>
+            <p>Приложение для спутниковых приемников GS</p>
+          </header>
+        </article>
+        <article>
+          <span class="image">
+            <img src="images/instally_preview.jpg" alt="" />
+          </span>
+          <header class="major">
+            <h3><a href="projects/instally" class="link">INSTALLY</a></h3>
+            <p>Выбор цветовой схемы для вашего Instagram</p>
+          </header>
+        </article>
+        <article>
+          <span class="image">
+            <img src="images/univer_preview.jpg" alt="" />
+          </span>
+          <header class="major">
+            <h3><a href="projects/university" class="link">UNIVERSITY PROJECTS</a></h3>
+            <p>Мои проекты в Институте травматологии</p>
+          </header>
+        </article>
+        <article>
+          <span class="image">
+            <img src="images/watts_preview.jpg" alt="" />
+          </span>
+          <header class="major">
+            <h3><a href="projects/watts" class="link">WATTS ANALYTICS</a></h3>
+            <p>Приложение-компаньон для Watts Battery</p>
+          </header>
+        </article>
+        <article>
+          <span class="image">
+            <img src="images/hobbies.jpg" alt="" />
+          </span>
+          <header class="major">
+            <h4>Мои увлечения</h4>
+            <ul class="alt">
+              <li>Игра на гитаре, бас-гитаре</li>
+              <li>Хирургия и травматология</li>
+              <li>Digital Art</li>
+              <li>Game Development</li>
+            </ul>
+          </header>
+        </article>
+      </section>
+
+      <!-- Latest Blog Posts -->
+      <section id="blogposts">
+        <div class="inner">
+          <h3><i class="fas fa-comment"></i> Последние статьи в блоге (mayorovyuri.eu)</h3>
+          <ul class="alt">
+            <li><a href="https://mayorovyuri.eu/blog/posts/how_i_speed_up_my_ml_services">How I Speed Up My ML
+                Services</a></li>
+            <li><a href="https://mayorovyuri.eu/blog/posts/redux_toolkit_query_codegen_and_openapi">RTK Query code
+                generation from OpenAPI
+                schemas</a></li>
+            <li><a href="https://mayorovyuri.eu/blog/posts/design_patterns_ds_1">Microservices Patterns with Real-World
+                Examples</a></li>
+            <li><a href="https://mayorovyuri.eu/blog/posts/chroma_vdb">Chroma Vector Database and Node.js</a></li>
+            <li><a href="https://mayorovyuri.eu/blog/posts/react_redux_toolkit_typescript_installation">Initial Redux
+                Toolkit Setup with
+                TypeScript Without the Headache</a></li>
+            <li><a href="https://mayorovyuri.eu/blog">... Еще</a></li>
+
+          </ul>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- Contact -->
+    <section id="contact">
+      <div class="inner">
+        <section>
+          <div class="contact-method">
+            <span class="icon solid alt fa-file"></span>
+            <h3>Резюме</h3>
+            <p>Если вам требуется мое резюме в формате PDF, пожалуйста, напишите мне в
+              <a href="tg://resolve?domain=Jim_Root">Telegram (@Jim_Root)</a> или на <a
+                href="mailto: mayorovyuri@gmail.com">email</a>
+            </p>
+          </div>
+        </section>
+        <section class="split">
+          <section>
+            <div class="contact-method">
+              <span class="icon solid alt fa-envelope"></span>
+              <h3>Email</h3>
+              <a href="mailto: mayorovyuri@gmail.com">mayorovyuri7@gmail.com</a>
+            </div>
+          </section>
+        </section>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="footer">
+      <div class="inner">
+        <ul class="icons">
+          <li><a href="https://github.com/noreederek" class="icon brands alt fa-github"><span
+                class="label">GitHub</span></a></li>
+          <li><a href="https://www.linkedin.com/in/yuri-mayorov-564083168" class="icon brands alt fa-linkedin"><span
+                class="label">LinkedIn</span></a></li>
+          <li><a href="tg://resolve?domain=Jim_Root" class="icon brands alt fa-telegram-plane"><span
+                class="label">Telegram</span></a></li>
+        </ul>
+        <ul class="copyright">
+          <li>&copy; Mayorov Yuri</li>
+          <li>Noree Derek</li>
+        </ul>
+      </div>
+    </footer>
+
   </div>
 
   <!-- Scripts -->
@@ -52,6 +543,7 @@
   <script src="assets/js/jquery.scrollex.min.js"></script>
   <script src="assets/js/browser.min.js"></script>
   <script src="assets/js/breakpoints.min.js"></script>
+  <script src="assets/js/splide.min.js"></script>
   <script src="assets/js/util.js"></script>
   <script src="assets/js/main.js"></script>
   <script>
@@ -109,7 +601,101 @@
       }
     };
   </script>
+  <script>
+    function calculateWorkExperience(targetDate) {
+      const today = new Date();
+      const target = new Date(targetDate);
 
+      if (isNaN(target)) {
+        return "6 лет";
+      }
+
+      let years = today.getFullYear() - target.getFullYear();
+      let months = today.getMonth() - target.getMonth();
+
+      if (months < 0) {
+        years--;
+        months += 12;
+      }
+
+      if (today.getDate() < target.getDate()) {
+        months--;
+        let daysInPreviousMonth = new Date(today.getFullYear(), today.getMonth(), 0).getDate();
+        if (months < 0) {
+          years--;
+          months += 12;
+        }
+      }
+      let result = `${years} лет ${months !== 0 ? `и ${months} месяц` : ''}${months > 1 && months < 5 ? 'а' : ''}${months >= 5 ? 'ев' : ''}`;
+
+      return result;
+    }
+
+    let span = document.getElementById("work-years");
+    span.textContent = calculateWorkExperience("2019-09-01");
+  </script>
+
+  <script>
+    function toggleReadMore() {
+      const additionalContent = document.getElementById('additional-content');
+      const readMoreOverlay = document.getElementById('read-more-overlay');
+
+      if (additionalContent.classList.contains('expanded')) {
+        additionalContent.classList.remove('expanded');
+        readMoreOverlay.classList.remove('hidden');
+      } else {
+        additionalContent.classList.add('expanded');
+        setTimeout(() => {
+          readMoreOverlay.classList.add('hidden');
+        }, 300);
+      }
+    }
+  </script>
+
+  <script>
+    // Redirect functionality
+    let redirectTimer;
+    let secondsLeft = 15;
+    let isRedirectCancelled = false;
+
+    function updateCountdown() {
+      const secondsSpan = document.getElementById('secondsTillRedirect');
+      if (secondsSpan && !isRedirectCancelled) {
+        secondsSpan.textContent = secondsLeft;
+        
+        if (secondsLeft <= 0) {
+          window.location.href = 'https://mayorovyuri.eu';
+          return;
+        }
+        
+        secondsLeft--;
+        redirectTimer = setTimeout(updateCountdown, 1000);
+      }
+    }
+
+    function cancelRedirect() {
+      isRedirectCancelled = true;
+      clearTimeout(redirectTimer);
+      
+      const redirectMessage = document.getElementById('redirectMessage');
+      const stayBtn = document.querySelector('a[href="#aboutme"].button.scrolly');
+      if (redirectMessage) {
+        redirectMessage.textContent = 'Хорошо) но информация тут возможно устарела';
+        stayBtn.textContent = 'Ну ладно';
+      }
+    }
+
+    // Start countdown when page loads
+    window.addEventListener('load', function() {
+      updateCountdown();
+      
+      // Add click event to "stay here" button
+      const stayButton = document.querySelector('a[href="#aboutme"].button.scrolly');
+      if (stayButton) {
+        stayButton.addEventListener('click', cancelRedirect);
+      }
+    });
+  </script>
 </body>
 
 </html>
