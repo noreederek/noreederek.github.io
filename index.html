@@ -87,7 +87,7 @@
           </h1>
         </header>
         <div class="content">
-          <p id="redirectMessage" style="text-shadow: 1px 1px 2px #ffffff;">Перекину вас на новый сайт через <span id="secondsTillRedirect"
+          <p id="redirectMessage" style="text-shadow: 1px 1px 2px #ffffff;">Открою новый сайт в соседней вкладке через <span id="secondsTillRedirect"
               style="font-size: large;">15</span> секунд</p>
           <ul class="actions">
             <li><a href="#aboutme" class="button scrolly">Остаться здесь <i class="fa fa-angle-double-down"
@@ -664,7 +664,7 @@
         secondsSpan.textContent = secondsLeft;
         
         if (secondsLeft <= 0) {
-          window.location.href = 'https://mayorovyuri.eu';
+          window.open('https://mayorovyuri.eu', '_blank');
           return;
         }
         
